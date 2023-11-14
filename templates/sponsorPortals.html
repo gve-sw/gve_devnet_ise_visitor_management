@@ -1,0 +1,52 @@
+<!--
+    Copyright (c) 2023 Cisco and/or its affiliates.
+
+This software is licensed to you under the terms of the Cisco Sample
+Code License, Version 1.1 (the "License"). You may obtain a copy of the
+License at
+
+               https://developer.cisco.com/docs/licenses
+
+All use of the material herein must be in accordance with the terms of
+the License. All rights not expressly granted by the License are
+reserved. Unless required by applicable law or agreed to separately in
+writing, software distributed under the License is distributed on an "AS
+IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+or implied.
+-->
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Available Sponsor Portals</title>
+
+</head>
+
+<body>
+
+    <div>Available ISE sponsor portals and guest SSIDs:</div>
+
+    {% if error == "True" %} 
+    
+        {{ message }}
+
+    {% else %} 
+
+        Sponsor Portals
+        <ul>
+            {% for portal in sponsorPortals['SearchResult']['resources'] %}
+            <li>{{portal['name']}} - ID: {{portal['id']}}</li>
+            {% endfor %}
+        </ul>
+
+        Guest SSIDs
+        <ul>
+            {% for ssid in guestSSIDs['SearchResult']['resources'] %}
+            <li>{{ssid['name']}} - ID: {{ssid['name']}}</li>
+            {% endfor %}
+        </ul>
+    {% endif %} 
+
+</body>
+</html>

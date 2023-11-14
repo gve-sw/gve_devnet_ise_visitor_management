@@ -1,0 +1,209 @@
+<!--
+    Copyright (c) 2023 Cisco and/or its affiliates.
+
+This software is licensed to you under the terms of the Cisco Sample
+Code License, Version 1.1 (the "License"). You may obtain a copy of the
+License at
+
+               https://developer.cisco.com/docs/licenses
+
+All use of the material herein must be in accordance with the terms of
+the License. All rights not expressly granted by the License are
+reserved. Unless required by applicable law or agreed to separately in
+writing, software distributed under the License is distributed on an "AS
+IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+or implied.
+-->
+
+{% extends "masterPage.html" %}
+
+{% block content %}
+<div class="row">
+
+    <!-- Left Rail -->
+    <div class="col-2">
+    </div>
+
+    <!-- Middle Rail -->
+    <div class="col-8">
+
+        {% include "alert.html" %}
+
+        <div class="section">
+            <div class="panel panel--loose panel--raised base-margin-bottom">
+                <h2 class="subtitle">Register a Visitor</h2>
+                <hr>
+                <form action="/create_visitor" method="POST">
+                    <p class="text-weight-900">Visit Details</p>
+                    <div class="row">
+                        <div class="col-md-6">
+
+                            <div class="form-group dropdown">
+                                <div class="form-group__text select">
+                                    <input id="building-select" name="building-select" value="Select an Option">
+                                    <label for="building-select">Building:*</label>
+                                </div>
+                                <div class="dropdown__menu">
+                                    <a>Building 1, Example Street 1, Berlin</a>
+                                    <a>Building 2, Example Street 2, Hamburg</a>
+                                    <a>Building 3, Example Street 3, Bonn</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group base-margin-bottom">
+                                <div class="form-group__text">
+                                    <input id="host-input" name="host-input" type="text" disabled value="{{host_email}}">
+                                    <label for="host-input">Host</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group base-margin-bottom">
+                                <div class="form-group__text">
+                                    <input id="start-date" name="start-date" type="datetime-local" required="" min="">
+                                    <label for="start-date">Start Date:* </label>
+                                </div>
+                                <div class="help-block" role="alert">
+                                    <span>Please choose a date in the future</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group base-margin-bottom">
+                                <div class="form-group__text">
+                                    <input id="end-date" name="end-date" type="datetime-local" required="" min="">
+                                    <label for="end-date">End Date:* </label>
+                                </div>
+                                <div class="help-block" role="alert">
+                                    <span>Please choose a date which is later than the start date </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-weight-900">Visitor Details</p>
+                    <div class="row">
+                        <div class="col-md-6">
+
+                            <div class="form-group base-margin-bottom">
+                                <div class="form-group__text">
+                                    <input id="first-name-input" name="first-name-input" type="text" required>
+                                    <label for="first-name-input">First Name *</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group base-margin-bottom">
+                                <div class="form-group__text">
+                                    <input id="last-name-input" name="last-name-input" type="text" required>
+                                    <label for="last-name-input">Last Name *</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+
+                            <div class="form-group base-margin-bottom">
+                                <div class="form-group__text">
+                                    <input id="phone-number-input" name="phone-number-input" type="tel">
+                                    <label for="phone-number-input">Phone Number</label>
+                                </div>
+                                <div class="help-block" role="alert">
+                                    <span>Please provide the phone number with the format +49xxxxxxx</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group base-margin-bottom">
+                                <div class="form-group__text">
+                                    <input id="email-input" name="email-input" type="email">
+                                    <label for="email-input">Email</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group base-margin-bottom">
+                                <div class="form-group__text">
+                                    <input id="company-input" name="company-input" type="text">
+                                    <label for="company-input">Company</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+
+                            <div class="form-group dropdown">
+                                <div class="form-group__text select">
+                                    <input id="purpose-select" name="purpose-select" value="Select an Option">
+                                    <label for="purpose-select">Purpose of Visit</label>
+                                </div>
+                                <div class="dropdown__menu">
+                                    <a>Interview</a>
+                                    <a>Client Meeting</a>
+                                    <a>Partner Meeting</a>
+                                    <a>Personal</a>
+                                    <a>Service Vendor</a>
+                                    <a>Refuse to Specifiy</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                     
+                        <div class="col-md-12">
+                            <div class="form-group base-margin-bottom">
+                                <div class="form-group__text">
+                                    <textarea id="comment-input" name="comment-input" rows="3"></textarea>
+                                    <label for="comment-input">Comments</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group base-margin-bottom">
+                                <label for="start_without_speaker">Check-In Visitor</label>
+                                <div class="form-group">
+                                    <label class="switch base-padding-top">
+                                        <input id="checkin-toggle" name="checking-toggle" type="checkbox">
+                                        <span class="switch__input"></span>
+
+                                    </label>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group base-margin-bottom">
+                                <div class="form-group__text">
+                                    <input id="input-badge-id" name="input-badge-id" rows="3"></input>
+                                    <label for="input-badge-id">Badge ID</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input id="settings-submit" onclick="showLoadingText()" onload="showOriginalText('Save')"
+                        class="btn btn-primary" type="submit" value="Submit">
+                    <span class="required-label pull-right">* required fields</span>
+
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Rail -->
+    <div class="col-2">
+    </div>
+</div>
+{% endblock %}

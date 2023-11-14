@@ -1,0 +1,318 @@
+<!--
+    Copyright (c) 2023 Cisco and/or its affiliates.
+
+This software is licensed to you under the terms of the Cisco Sample
+Code License, Version 1.1 (the "License"). You may obtain a copy of the
+License at
+
+               https://developer.cisco.com/docs/licenses
+
+All use of the material herein must be in accordance with the terms of
+the License. All rights not expressly granted by the License are
+reserved. Unless required by applicable law or agreed to separately in
+writing, software distributed under the License is distributed on an "AS
+IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+or implied.
+-->
+
+{% extends "masterPage.html" %}
+
+{% block content %}
+
+
+<div class="section">
+
+    {% include "alert.html" %}
+    {% include "success.html" %}
+
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-group base-margin-bottom">
+                <div class="form-group__text">
+                    <input id="filter_date" onchange="filterFunction()" name="filter_date" type="date" required=""
+                        value="{{today_str}}">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group input--icon base-margin-bottom">
+                <div class="form-group__text">
+                    <input id="input-type-search" onkeyup="filterFunction()" value="">
+                    <button type="button" class="link">
+                        <span class="icon-search"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <button id="print-table" class="btn btn--link" onclick="print_table();">
+                <span class="icon-print">
+                </span>
+                Print Table
+            </button> 
+        </div>
+
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-10">
+                </div>
+                <div class="col-md-2">
+                    <a href="/create_visitor" class="btn btn-primary">Add new Visitor</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="visitors" class="responsive-table">
+        <table class="table table--lined table--selectable table sortable">
+            <thead>
+                <tr>
+                    <th hidden> ISE ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Timeframe</th>
+                    <th class="hidden-md-down">Phone Number </th>
+                    <th class="hidden-md-down">Email</th>
+                    <th>Company</th>
+                    <th>Building</th>
+                    <th class="hidden-md-down">Purpose</th>
+                    <th class="hidden-lg-down">Comment</th>
+                    <th>Host</th>
+                    <th>Checked In</th>
+                    <th>Badge ID</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users_details %}
+                <tr>
+                    <td hidden>
+                        {{user.id}}
+                    </td>
+                    <td>
+                        {{user.guestInfo.firstName}}
+                    </td>
+                    <td>
+                        {{user.guestInfo.lastName}}
+                    </td>
+                    <td>
+                        {{user.guestAccessInfo.fromDate}} - {{user.guestAccessInfo.toDate}}
+                    </td>
+                    <td class="hidden-md-down">
+                        {{user.guestInfo.phoneNumber}}
+                    </td>
+                    <td class="hidden-md-down">
+                        {{user.guestInfo.emailAddress}}
+                    </td>
+                    <td>
+                        {{user.guestInfo.company}}
+                    </td>
+                    <td>
+                        {{user.customFields.ui_building_text_label}}
+                    </td>
+                    <td class="hidden-md-down">
+                        {% if user.reasonForVisit == 'Select an Option' %}
+                        -
+                        {% else %}
+                        {{user.reasonForVisit}}
+                        {% endif %}
+                    </td>
+                    <td class="hidden-md-down">
+                        {% if user.customFields.ui_comment_text_label == 'null' %}
+                        -
+                        {% else %}
+                        {{user.customFields.ui_comment_text_label}}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{user.customFields.ui_hostname_text_label}} ({{user.personBeingVisited}})
+                    </td>
+                    <td>
+                        {% if user.customFields.ui_checkedin_text_label == 'true' %}
+                        <span class="icon-check text-success"></span>
+                        <a href="/checkout?user_id={{user.id}}">Check Out</a>
+                        {% else %}
+                        <span class="icon-close text-danger"></span>
+                        <a class="btn btn--link" style="padding-left:0;" onclick="openModal('modal-default'); setUserID('{{user.id}}','{{user.customFields.ui_badgeid_text_label}}', '{{user.personBeingVisited}}')">Check In</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.customFields.ui_badgeid_text_label == 'null' %}
+                            -
+                        {% else %}
+                            {{user.customFields.ui_badgeid_text_label }}
+                        {% endif %}
+                        
+                    </td>
+                    <td>
+
+                        <input
+                            onclick="print_id_for_tag('{{user.guestInfo.firstName}}', '{{user.guestInfo.lastName}}', '{{user.guestInfo.company}}', '{{user.personBeingVisited}}', '{{user.customFields.ui_building_text_label}}', '{{user.guestAccessInfo.fromDate}} - {{user.guestAccessInfo.toDate}}', '{{user.customFields.ui_badgeid_text_label}}')"
+                            class="btn btn-primary" type="button" value="Print Badge">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<form id="checkin" action="/checkin" method="POST"> 
+<div class="modal hide" id="modal-default">
+    <div class="modal__dialog">
+        <div class="modal__content">
+            <a class="modal__close" onclick="closeModal('modal-default')"><span class="icon-close"></span></a>
+            <div class="modal__header">
+                <div class="modal__title">CheckIn</div>
+            </div>
+            <div class="modal__body">
+                <p>Please provide the handed out badge ID.</p>
+                <div class="form-group form-group--inline">
+                    <div class="form-group__text">
+                        <input id="input-badge-id" name="input-badge-id" type="text" value="">
+                        <label for="input-badge-id">Badge ID</label>
+                    </div>
+                </div>
+
+                <input id="input-user-id" name="input-user-id" type="hidden" value="" >
+                <input id="input-host-email" name="input-host-email" type="hidden" value="" >
+
+            </div>
+            <div class="modal__footer">
+                <button class="btn" onclick="closeModal('modal-default')">Checkin</button>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+
+<script>
+
+    function print_table(){
+         
+        var divToPrint=document.getElementById("visitors");
+        var print_table_style = document.getElementById("print_table_style");
+        
+        newWin= window.open("");
+        newWin.document.write(divToPrint.outerHTML.replace(/Check Out/g,"Yes").replace(/Check In/g,"No"));
+        newWin.document.write(print_table_style.outerHTML);
+        newWin.print();
+        newWin.close();
+    }
+
+    function setUserID(user_id, badge_id, host_email){
+        
+        user_id_input_field = document.getElementById("input-user-id");
+        user_id_input_field.value = user_id;
+
+        badge_id_input_field = document.getElementById("input-badge-id");
+        if (badge_id == 'null'){
+            badge_id = "";
+        }
+        badge_id_input_field.value = badge_id;
+
+        host_email_input_field = document.getElementById("input-host-email");
+        host_email_input_field.value = host_email;
+         
+    }
+
+    function filterFunction() {
+        var text_input, text_filter, date_filter_value, date_filter_without_time, filter_date, table, tr, td, i, txtValue;
+
+        date_filter_value = new Date(document.getElementById('filter_date').value);
+        date_filter_without_time = date_filter_value.getMonth() + 1 + "/" + date_filter_value.getDate() + "/" + date_filter_value.getFullYear();
+        filter_date = Date.parse(date_filter_without_time);
+        
+        text_input = document.getElementById("input-type-search");
+        text_filter = text_input.value.toUpperCase();
+
+        table = document.getElementById("visitors");
+        tr = table.getElementsByTagName("tr");
+
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td");
+
+            for (j = 0; j < td.length; j++) {
+
+                cell = tr[i].getElementsByTagName("td")[j];
+                time_span_cell = tr[i].getElementsByTagName("td")[3];
+
+                if (cell && time_span_cell) {
+                    txtValue = cell.textContent || cell.innerText;
+                    date_range = time_span_cell.textContent || time_span_cell.innerText;
+
+                    date_range_list = date_range.split(" - ");
+                    const start_date = Date.parse(date_range_list[0].trimStart().split(" ")[0]);
+                    const end_date = Date.parse(date_range_list[1].trimStart().split(" ")[0]);
+
+                    if (txtValue.toUpperCase().includes(text_filter) && filter_date >= start_date && filter_date <= end_date) {
+                        tr[i].style.display = "";
+                        break;
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    }
+
+    function print_id_for_tag(firstName, lastName, company, host, building, date, badge_id) {
+        var oldstr = document.body.innerHTML;
+        var badge_html = `<html><head><title>Visitor Management</title></head><body>
+        <div class="tag_container">
+            <div class="card">
+                
+                <div class="back">
+                <h3 class="name">${firstName} ${lastName}</h3>
+                <div>${company}</div>      
+                <div class="info">
+                    <p><span class="property">Host: </span>${host}</p>
+                    <p><span class="property">Building: </span>${building}</p>
+                    <p><span class="property">Date: </span>${date}</p>
+                    <p><span class="property">Badge ID: </span>${badge_id}</p>
+                </div>
+                </div>
+                
+            </div>
+        </div>
+        </div>
+    </body>`
+        document.body.innerHTML = badge_html;
+
+        window.print();
+        document.body.innerHTML = oldstr;
+
+        return false;
+    }
+
+    window.onload = function () {
+        filterFunction();
+    }
+</script>
+<style id="print_table_style" type="text/css" media="print">
+    @page{
+        size: landscape; 
+    }
+    table {
+        border-collapse: collapse;
+    }
+    
+    th, td{
+        border: 1px solid #dee2e6 !important;
+        font-size: small;
+        padding: 1px 20px;
+        border-collapse: collapse;
+        min-width: 80px;
+        max-width: 150px;
+        word-break: break-word;
+        
+    }
+    table td:last-child {display:none}
+    table th:last-child {display:none}
+</style>
+
+{% endblock %}

@@ -1,0 +1,133 @@
+<!--
+    Copyright (c) 2023 Cisco and/or its affiliates.
+
+This software is licensed to you under the terms of the Cisco Sample
+Code License, Version 1.1 (the "License"). You may obtain a copy of the
+License at
+
+               https://developer.cisco.com/docs/licenses
+
+All use of the material herein must be in accordance with the terms of
+the License. All rights not expressly granted by the License are
+reserved. Unless required by applicable law or agreed to separately in
+writing, software distributed under the License is distributed on an "AS
+IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+or implied.
+-->
+
+<!doctype html>
+<html id="styleguide" class="" lang="en">
+        
+    <head>
+            <meta charset="utf-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">  
+                              
+            <title>Visitor Management</title>
+            
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/cui-standard.css') }}">
+            <link rel="icon" href="{{ url_for('static', filename='images/Logo_small_blue.png')}}">                    
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/customStyles.css') }}">
+            <link href="https://cdn.jsdelivr.net/gh/tofsjonas/sortable@latest/sortable.min.css" rel="stylesheet" />
+            <script src="https://cdn.jsdelivr.net/gh/tofsjonas/sortable@latest/sortable.min.js"></script>
+            <script src="https://code.jquery.com/jquery-3.0.0.min.js" integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0=" crossorigin="anonymous"></script>
+            <script src="{{ url_for('static', filename='js/styleguide.js') }}"></script>
+            <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+        </head>
+        <body class="cui">
+    
+             <!-- Header -->
+            <nav class="header" id="styleguideheader" role="navigation">
+                <div class="container-fluid">
+                    <div class="header-panels">
+                        
+                        <!--Cisco logo and title area (left)-->
+                        <div class="header-panel">
+                            <a class="header-bar__logo header__logo" href="https://gve-devnet.cisco.com/" target="_blank">
+                                <span id="header-logo" class="icon-cisco"></span>
+                            </a>
+                            <h1 class="header__title">Visitor Management</h1>
+                        </div>
+                        <!--Center area (middle)-->
+                        <div class="header-panel header-panel--center">
+                        </div>
+                        <!--Link area (right)-->
+                        <div class="header-panel header-panel--right"> 
+                            
+                            <a class="header-item {% if hiddenLinks == True %}hidden-5xl-down{% endif %}" disabled>{{host_name}}</a>
+                            <a class="header-item {% if hiddenLinks == True %}hidden-5xl-down{% endif %}" href="/lobby"><span class="icon-home"></span></a> 
+                            {% if is_lobby_user == True %}<button class="btn btn--link" onclick="openModal('modal-users')">Manage Lobby Users</button>{% endif %}
+                            <a class="header-item {% if hiddenLinks == True %}hidden-5xl-down{% endif %}" href="/?logout=true">Logout</a>
+
+                        </div>  
+                    </div>
+                </div>
+            </nav>
+
+            <form action="/addLobbyUser" method="POST"> 
+                <div class="modal hide" id="modal-users">
+                    <div class="modal__dialog">
+                        <div class="modal__content">
+                            <a class="modal__close" onclick="closeModal('modal-users')"><span class="icon-close"></span></a>
+                            <div class="modal__header">
+                                <div class="modal__title">Add Lobby User</div>
+                            </div>
+                            <div class="modal__body">
+                                <p>Add or remove the lobby users by adapting the comma separated list.</p>
+                                <div class="form-group base-margin-bottom">
+                                    <div class="form-group__text">
+                                        <textarea id="input-lobby-users" name="input-lobby-users" type="text">{{lobby_users}}</textarea>
+                                        <label for="input-lobby-users">Lobby Users:</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal__footer">
+                                <button class="btn" onclick="closeModal('modal-users');">Save Lobby Users</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </form>
+  
+            <!--Content-->
+            <div class="content content--alt">
+                <div class="container-fluid">                
+    
+                        {% block content %}
+
+                        {% endblock %}
+                        
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="footer__links">
+                    <ul class="list list--inline">
+
+
+                        <li><a href="https://gve-devnet.cisco.com/"><img id="footer-link-gve-devnet" src="{{ url_for('static', filename='images/Logo_long_blue.png')}}"></a></li>
+                        <li><a href="http://www.cisco.com/cisco/web/siteassets/contacts/index.html" target="_blank">Contacts</a></li>
+                        <li><a href="https://secure.opinionlab.com/ccc01/o.asp?id=jBjOhqOJ" target="_blank">Feedback</a></li>
+                        <li><a href="https://www.cisco.com/c/en/us/about/help.html" target="_blank">Help</a></li>
+                        <li><a href="https://www.cisco.com/c/en/us/about/legal/terms-conditions.html" target="_blank">Terms & Conditions</a></li></li>
+                        <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html" target="_blank">Privacy Statement</a></li>
+                        <li><a href="https://www.cisco.com/c/en/us/about/legal/privacy-full.html#cookies" target="_blank">Cookie Policy</a></li>
+                        <li><a href="https://www.cisco.com/c/en/us/about/legal/trademarks.html" target="_blank">Trademarks</a></li>
+                    </ul>
+                </div>
+            </footer>
+        </body>
+
+        <script>
+
+            function store_lobby_users(){
+                var lobby_users_textarea =document.getElementById("input-lobby-users");
+                var lobby_user_string = lobby_users_textarea.value;
+            }
+        </script>
+    </html>
+
+    
